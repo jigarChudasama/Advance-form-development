@@ -1,8 +1,3 @@
-/**
- * Shared icons used across the project.
- * Use className to control size (e.g. w-5 h-5).
- */
-
 export function IconGoogle({ className = 'w-5 h-5' }) {
   return (
     <svg className={className} viewBox="0 0 24 24">
@@ -35,5 +30,51 @@ export function IconMoon({ className = 'w-5 h-5' }) {
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
     </svg>
+  )
+}
+
+export function IconEye({ className = 'w-5 h-5' }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      width={20}
+      height={20}
+      viewBox="0 0 932.15 932.15"
+      xmlSpace="preserve"
+      className={className}
+    >
+      <g>
+        <path
+          d="M466.075 161.525c-205.6 0-382.8 121.2-464.2 296.1-2.5 5.3-2.5 11.5 0 16.9 81.4 174.899 258.601 296.1 464.2 296.1s382.8-121.2 464.2-296.1c2.5-5.3 2.5-11.5 0-16.9-81.4-174.9-258.6-296.1-464.2-296.1zm0 514.701c-116.1 0-210.1-94.101-210.1-210.101 0-116.1 94.1-210.1 210.1-210.1 116.1 0 210.1 94.1 210.1 210.1s-94.1 210.101-210.1 210.101z"
+          fill="currentColor"
+        />
+        <circle cx="466.075" cy="466.025" r="134.5" fill="currentColor" />
+      </g>
+    </svg>
+
+  )
+}
+
+export function IconEyeOff({ className = 'w-5 h-5' }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      width={20}
+      height={20}
+      viewBox="0 0 100 100"
+      xmlSpace="preserve"
+      className={className}
+    >
+      <g>
+        <path
+          d="M65.45 58.17a17.5 17.5 0 0 0 2.04-8.19c.006-9.665-7.825-17.505-17.49-17.51a8.6 8.6 0 0 0-1.6.1l-6.4-9.6a51.43 51.43 0 0 1 8-.6c30.1 0 46.45 25.2 47.1 26.25.1.2.2.4.3.65a2.5 2.5 0 0 1 0 1.4c-.058.233-.16.454-.3.65-.05.05-.05.1-.1.15a64.44 64.44 0 0 1-22.6 20.1zM2.6 49.27c.1-.25.2-.45.3-.65A62.88 62.88 0 0 1 31 25.97L17.92 6.355a2.5 2.5 0 0 1 4.16-2.77l60 90a2.5 2.5 0 0 1-4.16 2.77l-13.835-20.75A51.915 51.915 0 0 1 50 77.57c-29.15 0-45.4-23.65-47-26.1-.05-.05-.05-.1-.1-.15a1.895 1.895 0 0 1-.3-.65 3.92 3.92 0 0 1-.1-.7 3.92 3.92 0 0 1 .1-.7zm31.6 8.215c4.156 8.726 14.6 12.43 23.325 8.275l-2.835-4.25a12.435 12.435 0 0 1-13.622-2.725c-4.834-4.879-4.797-12.752.082-17.585l-2.815-4.23a17.425 17.425 0 0 0-5.835 13 17.5 17.5 0 0 0 1.7 7.515zm28.3-7.515a12.465 12.465 0 0 0-10.75-12.35l10.35 15.5a12.94 12.94 0 0 0 .4-3.15z"
+          fill="currentColor"
+        />
+      </g>
+    </svg>
+
   )
 }

@@ -1,11 +1,57 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import DarkModeToggle from '../../components/DarkModeToggle'
-import { IconGoogle } from '../../components/Icon'
+import { IconGoogle, IconEye, IconEyeOff } from '../../components/Icon'
+import { EMAIL_REGEX, PASSWORD_REGEX } from '../../utils/constnt'
 
 const inputClass =
   'w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all dark:bg-slate-800/50 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800 dark:focus:ring-indigo-400'
 
 export default function SignIn() {
+  const [showPassword, setShowPassword] = useState(false)
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+
+  const [validation, setValidation] = useState({
+    email: false,
+    password: false
+  })
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }))
+    setValidation((prev) => ({
+      ...prev,
+      [name]: false
+    }))
+  }
+
+  const checkValidation = () => {
+    if (!formData.email || !EMAIL_REGEX.test(formData.email)) {
+      return setValidation((prev) => ({
+        ...prev,
+        email: true
+      }))
+    }
+    if (!formData.password || !PASSWORD_REGEX.test(formData.password)) {
+      return setValidation((prev) => ({
+        ...prev,
+        password: true
+      }))
+    }
+    handleSubmit()
+  }
+
+  const handleSubmit = () => {
+    console.log('user logged in', formData)
+  }
+
   return (
     <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950">
       <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-violet-600 via-indigo-600 to-blue-700 p-12 flex-col justify-center">
@@ -44,32 +90,83 @@ export default function SignIn() {
               <div className="flex-1 h-px bg-slate-200 dark:bg-slate-600" />
             </div>
 
-            <form className="mt-6 space-y-5">
-              <div>
+            <form className="mt-6 space-y-5" onSubmit={(e) => {
+              e.preventDefault()
+              checkValidation()
+            }} >
+              <div className='relative' >
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email address</label>
                 <input
                   id="email"
                   name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
+                  type="text"
                   className={inputClass}
                   placeholder="name@company.com"
+                  onChange={handleInputChange}
                 />
+                <p
+                  className={`
+                    absolute top-full left-0 z-50 mt-2
+
+                    bg-[#ffebeb] border border-[#FF5C5C] rounded shadow-lg
+
+                    px-3 py-1.5
+                    sm:text-xs text-[11px] text-[#FF5C5C] 
+
+                    max-w-[250px]
+                    w-fit
+
+                    transition-all duration-300 ease-out transform
+                    ${validation.email ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'}
+                  `}
+                >
+                  {validation.email ? 'Please enter a valid email' : 'Please enter your email'}
+                  <span className="absolute -top-1 left-4 w-2 h-2 bg-[#ffebeb] border-t border-l border-[#FF5C5C] transform rotate-45" />
+                </p>
               </div>
-              <div>
+              <div className='relative' >
                 <div className="flex items-center justify-between mb-1.5">
                   <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className={inputClass}
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    className={inputClass + ' pr-12'}
+                    placeholder="••••••••"
+                    aria-describedby="password-toggle"
+                    onChange={handleInputChange}
+                  />
+                  <button
+                    id="password-toggle"
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 px-3 flex items-center text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <IconEyeOff className="w-5 h-5 text-slate-700" /> : <IconEye className="w-5 h-5 text-slate-700" />}
+                  </button>
+                </div>
+                <p
+                  className={`
+                    absolute top-full left-0 z-50 mt-2
+
+                    bg-[#ffebeb] border border-[#FF5C5C] rounded shadow-lg
+
+                    px-3 py-1.5
+                    sm:text-xs text-[11px] text-[#FF5C5C] 
+
+                    max-w-[250px]
+                    w-fit
+
+                    transition-all duration-300 ease-out transform
+                    ${validation.password ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'}
+                  `}
+                >
+                  {validation.password ? 'Please enter strong password' : 'Please enter your password'}
+                  <span className="absolute -top-1 left-4 w-2 h-2 bg-[#ffebeb] border-t border-l border-[#FF5C5C] transform rotate-45" />
+                </p>
               </div>
               <label className="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400 text-sm">
                 <input type="checkbox" className="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" />

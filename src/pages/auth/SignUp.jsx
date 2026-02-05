@@ -1,6 +1,8 @@
 
 import { Link } from 'react-router-dom'
 import DarkModeToggle from '../../components/DarkModeToggle'
+import { IconEye, IconEyeOff } from '../../components/Icon'
+import { useState } from 'react'
 
 const inputClass =
   'w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all dark:bg-slate-800/50 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800 dark:focus:ring-indigo-400'
@@ -9,6 +11,9 @@ const labelClass = 'block text-sm font-medium text-slate-700 dark:text-slate-300
 const sectionTitle = 'text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3'
 
 export default function SignUp() {
+
+  const [showPassword, setShowPassword] = useState(false)
+
   return (
     <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-950">
       <div className="w-full lg:w-1/2 flex flex-col items-center flex-1 min-w-0 overflow-y-auto scrollbar-hide py-8 px-4 sm:px-8">
@@ -26,20 +31,52 @@ export default function SignUp() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
                     <label htmlFor="name" className={labelClass}>Full name</label>
-                    <input id="name" name="name" type="text" autoComplete="name" required placeholder="Alex Johnson" className={inputClass} />
+                    <input
+                      id="name"
+                      name="name" type="text"
+                      placeholder="Alex Johnson"
+                      className={inputClass} />
                   </div>
                   <div>
                     <label htmlFor="email" className={labelClass}>Email</label>
-                    <input id="email" name="email" type="email" autoComplete="email" required placeholder="name@company.com" className={inputClass} />
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="name@company.com"
+                      className={inputClass} />
                   </div>
                   <div>
                     <label htmlFor="password" className={labelClass}>Password</label>
-                    <input id="password" name="password" type="password" autoComplete="new-password" required placeholder="••••••••" className={inputClass} />
+                    <div className="relative">
+                      <input
+                        id="password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        className={inputClass + ' pr-12'}
+                        placeholder="••••••••"
+                        aria-describedby="password-toggle"
+                      />
+                      <button
+                        id="password-toggle"
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 px-3 flex items-center text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <IconEyeOff className="w-5 h-5 text-slate-700" /> : <IconEye className="w-5 h-5 text-slate-700" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-4">
                   <label htmlFor="age" className={labelClass}>Age</label>
-                  <input id="age" name="age" type="text" min={1} max={120} placeholder="25" className={inputClass} />
+                  <input
+                    id="age"
+                    name="age"
+                    type="text"
+                    placeholder="25"
+                    className={inputClass} />
                 </div>
               </section>
 
@@ -48,11 +85,21 @@ export default function SignUp() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="tel" className={labelClass}>Phone</label>
-                    <input id="tel" name="tel" type="tel" autoComplete="tel" placeholder="+1 234 567 8900" className={inputClass} />
+                    <input
+                      id="tel"
+                      name="tel"
+                      type="tel"
+                      placeholder="+1 234 567 8900"
+                      className={inputClass} />
                   </div>
                   <div>
                     <label htmlFor="search" className={labelClass}>How did you find us? (search)</label>
-                    <input id="search" name="search" type="search" placeholder="Search..." className={inputClass} />
+                    <input
+                      id="search"
+                      name="search"
+                      type="search"
+                      placeholder="Search..."
+                      className={inputClass} />
                   </div>
                 </div>
               </section>
@@ -62,7 +109,11 @@ export default function SignUp() {
                 <div className="flex flex-col gap-4">
                   <div>
                     <label htmlFor="dob" className={labelClass}>Date of birth</label>
-                    <input id="dob" name="dob" type="date" className={inputClass} />
+                    <input
+                      id="dob"
+                      name="dob"
+                      type="date"
+                      className={inputClass} />
                   </div>
                 </div>
               </section>
@@ -70,7 +121,9 @@ export default function SignUp() {
               <section>
                 <div className="space-y-3">
                   <label className="flex items-start gap-2 cursor-pointer">
-                    <input type="checkbox" required className="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600" />
+                    <input
+                      type="checkbox"
+                      className="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600" />
                     <span className="text-sm text-slate-600 dark:text-slate-400">
                       I agree to the <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Terms of Service</a> and <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Privacy Policy</a>
                     </span>

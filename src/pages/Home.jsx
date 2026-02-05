@@ -8,7 +8,6 @@ export default function Home() {
         <DarkModeToggle />
       </div>
       <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">Home</h1>
-      <p className="text-slate-600 dark:text-slate-400 mb-8">Welcome to the app. Neat modern UI with dark mode.</p>
       <nav className="flex flex-wrap gap-4 justify-center">
         <Link
           to="/signin"
