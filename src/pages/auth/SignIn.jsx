@@ -3,32 +3,36 @@ import { useState } from 'react'
 import DarkModeToggle from '../../components/DarkModeToggle'
 import { IconGoogle, IconEye, IconEyeOff } from '../../components/Icon'
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../../utils/constnt'
+import { useMessage } from '../../hook/useMessage'
 
 const inputClass =
   'w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all dark:bg-slate-800/50 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800 dark:focus:ring-indigo-400'
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
+  const { messageSuccess } = useMessage()
 
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    termsAccepted: false
   })
 
   const [validation, setValidation] = useState({
     email: false,
-    password: false
+    password: false,
+    termsAccepted: false
   })
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target
+    const { name, value, type, checked } = event.target
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }))
     setValidation((prev) => ({
       ...prev,
-      [name]: false
+      [name]: false,
     }))
   }
 
@@ -45,11 +49,19 @@ export default function SignIn() {
         password: true
       }))
     }
+    if (!formData.termsAccepted) {
+      return setValidation(prev => ({
+        ...prev,
+        termsAccepted: true
+      }))
+    }
+
     handleSubmit()
   }
 
   const handleSubmit = () => {
-    console.log('user logged in', formData)
+    // console.log('user logged in', formData)
+    messageSuccess("sign in Successful")
   }
 
   return (
@@ -120,7 +132,7 @@ export default function SignIn() {
                     ${validation.email ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'}
                   `}
                 >
-                  {validation.email ? 'Please enter a valid email' : 'Please enter your email'}
+                  {validation.email && !formData.email ? 'Please enter your email' : 'Please enter a valid email'}
                   <span className="absolute -top-1 left-4 w-2 h-2 bg-[#ffebeb] border-t border-l border-[#FF5C5C] transform rotate-45" />
                 </p>
               </div>
@@ -164,14 +176,39 @@ export default function SignIn() {
                     ${validation.password ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'}
                   `}
                 >
-                  {validation.password ? 'Please enter strong password' : 'Please enter your password'}
+                  {validation.password && !formData.password ? 'Please enter your password' : 'Please enter strong password'}
                   <span className="absolute -top-1 left-4 w-2 h-2 bg-[#ffebeb] border-t border-l border-[#FF5C5C] transform rotate-45" />
                 </p>
               </div>
-              <label className="flex items-center gap-2 cursor-pointer text-slate-600 dark:text-slate-400 text-sm">
-                <input type="checkbox" className="rounded border-slate-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" />
-                Remember me for 30 days
+              <div className='relative' >
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="termsAccepted"
+                  checked={formData.termsAccepted}
+                  onChange={handleInputChange}
+                  className="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600" />
+                <span className="text-sm text-slate-600 dark:text-slate-400">
+                  I agree to the <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Terms of Service</a> and <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Privacy Policy</a>
+                </span>
               </label>
+              <p
+                className={`
+                    bg-[#ffebeb] border border-[#FF5C5C] rounded shadow-lg
+
+                    px-3 py-1.5
+                    sm:text-xs text-[11px] text-[#FF5C5C] 
+
+                    max-w-[350px]
+                    w-fit
+
+                    transition-all duration-300 ease-out transform
+                    ${validation.termsAccepted ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'}
+                  `}
+              >
+                {validation.termsAccepted ? 'You must accept the terms and conditions' : ''}
+              </p>
+              </div>
               <button
                 type="submit"
                 className="w-full py-3 px-4 bg-linear-to-r from-indigo-600 to-violet-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-900 transition-all"
