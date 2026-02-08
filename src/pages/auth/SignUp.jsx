@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import DarkModeToggle from '../../components/DarkModeToggle'
 import { IconEye, IconEyeOff } from '../../components/Icon'
 import { useState } from 'react'
 import { useMessage } from '../../hook/useMessage'
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../../utils/constnt'
-import {calculateAge} from '../../utils/helper'
+import { calculateAge } from '../../utils/helper'
 
 const inputClass =
   'w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all dark:bg-slate-800/50 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800 dark:focus:ring-indigo-400'
@@ -16,6 +16,7 @@ export default function SignUp() {
 
   const [showPassword, setShowPassword] = useState(false)
   const { messageSuccess } = useMessage()
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -54,10 +55,10 @@ export default function SignUp() {
 
   const handleDateOfBirthChange = (event) => {
     const { value } = event.target
-    
+
     if (value) {
       const calculatedAge = calculateAge(value)
-      
+
       setFormData((prev) => ({
         ...prev,
         dateOfBirth: value,
@@ -81,7 +82,7 @@ export default function SignUp() {
   const checkValidation = () => {
     const today = new Date()
     const dob = new Date(formData.dateOfBirth)
-    
+
     if (!formData.fullName) {
       return setValidation((prev) => ({
         ...prev,
@@ -123,7 +124,7 @@ export default function SignUp() {
     if (parseInt(formData.age) !== calculatedAge) {
       return setValidation(prev => ({
         ...prev,
-        ageDoNotMatch: true 
+        ageDoNotMatch: true
       }))
     }
 
@@ -138,9 +139,19 @@ export default function SignUp() {
   }
 
   const handleSubmit = () => {
-    // console.log('user logged in', formData)
-    messageSuccess("sign up Successful")
-  }
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    users.push({
+      email: formData.email.trim(),
+      password: formData.password.trim()
+    });
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    messageSuccess("Signup Successful");
+    navigate("/sign-in");
+  };
 
   return (
     <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-950">
@@ -455,7 +466,7 @@ export default function SignUp() {
 
             <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
               Already have an account?{' '}
-              <Link to="/signin" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">
+              <Link to="/sign-in" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">
                 Sign in
               </Link>
             </p>

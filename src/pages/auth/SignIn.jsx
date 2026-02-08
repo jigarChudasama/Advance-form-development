@@ -1,16 +1,22 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import DarkModeToggle from '../../components/DarkModeToggle'
 import { IconGoogle, IconEye, IconEyeOff } from '../../components/Icon'
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../../utils/constnt'
 import { useMessage } from '../../hook/useMessage'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, googleProvider } from '../../utils/firebase'
+import { generateToken } from '../../utils/jwt'
+import { setCookie } from '../../utils/cookie'
 
 const inputClass =
   'w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all dark:bg-slate-800/50 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800 dark:focus:ring-indigo-400'
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
-  const { messageSuccess } = useMessage()
+  const { messageSuccess, messageError } = useMessage()
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     email: '',
@@ -59,10 +65,67 @@ export default function SignIn() {
     handleSubmit()
   }
 
-  const handleSubmit = () => {
-    // console.log('user logged in', formData)
-    messageSuccess("sign in Successful")
-  }
+  const handleSubmit = async () => {
+    try {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const user = users.find(
+        (u) =>
+          u.email.toLowerCase() === formData.email.toLowerCase() &&
+          u.password === formData.password
+      );
+
+      if (!user) {
+        messageError("Invalid credentials Sign up First! ");
+        return;
+      }
+
+      const token = await generateToken({
+        email: user.email,
+        provider: "email"
+      });
+
+      setCookie("token", token, 1);
+      navigate("/");
+
+    } catch (error) {
+      console.error("Login Error:", error);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    if (googleLoading) return;
+
+    try {
+      setGoogleLoading(true);
+
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      if (user) {
+
+        const token = await generateToken({
+          email: user.email,
+          provider: "google"
+        });
+        setCookie("token", token, 1 / 24);
+        navigate("/");
+        messageSuccess("Google Sign in successful");
+      }
+
+    } catch (error) {
+      if (
+        error.code === "auth/popup-closed-by-user" ||
+        error.code === "auth/cancelled-popup-request"
+      ) {
+        return;
+      }
+
+      console.error("Google Sign In Error:", error);
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950">
@@ -89,10 +152,16 @@ export default function SignIn() {
             <div className="mt-6">
               <button
                 type="button"
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm"
+                onClick={handleGoogleLogin}
+                disabled={googleLoading}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <IconGoogle className="w-5 h-5" />
-                Continue with Google
+                {googleLoading ? (
+                  <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+                ) : (
+                  <IconGoogle className="w-5 h-5" />
+                )}
+                {googleLoading ? 'Signing in...' : 'Continue with Google'}
               </button>
             </div>
 
@@ -181,19 +250,19 @@ export default function SignIn() {
                 </p>
               </div>
               <div className='relative' >
-              <label className="flex items-start gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="termsAccepted"
-                  checked={formData.termsAccepted}
-                  onChange={handleInputChange}
-                  className="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600" />
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  I agree to the <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Terms of Service</a> and <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Privacy Policy</a>
-                </span>
-              </label>
-              <p
-                className={`
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="termsAccepted"
+                    checked={formData.termsAccepted}
+                    onChange={handleInputChange}
+                    className="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600" />
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    I agree to the <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Terms of Service</a> and <a href="#" className="text-indigo-600 dark:text-indigo-400 hover:underline">Privacy Policy</a>
+                  </span>
+                </label>
+                <p
+                  className={`
                     bg-[#ffebeb] border border-[#FF5C5C] rounded shadow-lg
 
                     px-3 py-1.5
@@ -205,9 +274,9 @@ export default function SignIn() {
                     transition-all duration-300 ease-out transform
                     ${validation.termsAccepted ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none'}
                   `}
-              >
-                {validation.termsAccepted ? 'You must accept the terms and conditions' : ''}
-              </p>
+                >
+                  {validation.termsAccepted ? 'You must accept the terms and conditions' : ''}
+                </p>
               </div>
               <button
                 type="submit"
@@ -219,7 +288,7 @@ export default function SignIn() {
 
             <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
               Don&apos;t have an account?{' '}
-              <Link to="/signup" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">Sign up</Link>
+              <Link to="/sign-up" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300">Sign up</Link>
             </p>
           </div>
         </div>
