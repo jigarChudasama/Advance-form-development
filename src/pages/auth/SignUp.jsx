@@ -343,12 +343,15 @@ export default function SignUp() {
                     <input
                       id="phone"
                       name="phone"
-                      type="tel"
+                      type="text"
                       placeholder="+1 234 567 8900"
                       className={inputClass}
                       value={formData.phone}
-                      onChange={handleInputChange}
-                      autoComplete={false}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9+\s-]/g, '');
+                        handleInputChange({ target: { name: 'phone', value } });
+                      }}
+                      autoComplete="off"
                     />
                     <p
                       className={`
